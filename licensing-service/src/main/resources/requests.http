@@ -1,0 +1,37 @@
+
+###
+GET http://localhost:8080/api/v1/organizations/1/licenses/1
+Content-Type: application/json
+
+###
+POST http://localhost:8080/api/v1/organizations/1/licenses
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "id": 1,
+  "licenseId": "1111-4444",
+  "description": "IntelliJ License",
+  "organizationId": "1",
+  "productName": "IntelliJ",
+  "licenseType": "FULL"
+}
+
+###
+DELETE http://localhost:8080/api/v1/organizations/1/licenses/1
+Content-Type: application/json
+
+###
+PUT http://localhost:8080/api/v1/organizations/1/licenses
+Content-Type: application/json
+Accept-Language: es
+
+{
+  "id": 1,
+  "licenseId": "1111-4444",
+  "description": "IntelliJ License",
+  "organizationId": "1",
+  "productName": "IntelliJ",
+  "licenseType": "FULL"
+}
+
