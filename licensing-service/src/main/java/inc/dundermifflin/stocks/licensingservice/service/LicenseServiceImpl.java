@@ -4,7 +4,10 @@ import inc.dundermifflin.stocks.licensingservice.config.CommentProperties;
 import inc.dundermifflin.stocks.licensingservice.model.License;
 import inc.dundermifflin.stocks.licensingservice.model.LicenseType;
 import inc.dundermifflin.stocks.licensingservice.repository.LicenseRepository;
+import inc.dundermifflin.stocks.licensingservice.service.client.OrganizationClient;
+import inc.dundermifflin.stocks.licensingservice.service.client.OrganizationClientResolver;
 import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
+import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -23,10 +26,14 @@ class LicenseServiceImpl implements LicenseService {
     private final LicenseRepository licenseRepository;
     private final MessageSource messageSource;
     private final CommentProperties commentProperties;
+    private final OrganizationClientResolver resolver;
 
     @Override
     public LicenseDto getLicense(String licenseId, String organizationId) {
-        return LicenseDto.from(licenseRepository.findByOrganizationIdAndLicenseId(licenseId, organizationId).orElseThrow());
+        LicenseDto licenseDto = LicenseDto.from(licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId).orElseThrow());
+        OrganizationDto organization = resolver.getClient().getOrganization(organizationId);
+        licenseDto.setOrganizationDto(organization);
+        return licenseDto;
     }
 
     @Override
@@ -64,4 +71,5 @@ class LicenseServiceImpl implements LicenseService {
         licenseRepository.delete(licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId).orElseThrow());
         return SuccessResponse.builder().message(String.format(messageSource.getMessage("license.delete.message", null, locale), licenseId, organizationId)).build();
     }
+
 }

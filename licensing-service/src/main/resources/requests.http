@@ -1,6 +1,13 @@
+###
+POST http://127.0.0.1:8888/actuator/refresh
+Content-Type: application/json
 
 ###
-GET http://localhost:8888/api/v1/organizations/1/licenses/1111-4444
+GET http://127.0.0.1:8888/actuator/env
+Content-Type: application/json
+
+###
+GET http://localhost:8888/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b/licenses/1111-4444
 Content-Type: application/json
 
 ###
@@ -9,7 +16,6 @@ Content-Type: application/json
 Accept-Language: es
 
 {
-  "id": 1,
   "licenseId": "1111-4444",
   "description": "IntelliJ License",
   "organizationId": "1",

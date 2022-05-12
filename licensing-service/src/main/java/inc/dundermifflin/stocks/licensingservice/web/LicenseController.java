@@ -36,7 +36,7 @@ public class LicenseController {
 
     @GetMapping("/{licenseId}")
     public ResponseEntity<LicenseDto> getLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId) {
-        LicenseDto license = licenseService.getLicense(organizationId, licenseId);
+        LicenseDto license = licenseService.getLicense(licenseId, organizationId);
         license.add(linkTo(methodOn(LicenseController.class)
                         .getLicense(organizationId, license.getLicenseId()))
                         .withSelfRel(),

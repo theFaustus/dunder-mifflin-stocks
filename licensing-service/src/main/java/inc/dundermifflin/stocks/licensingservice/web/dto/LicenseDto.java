@@ -16,6 +16,7 @@ public class LicenseDto extends RepresentationModel<LicenseDto> {
     private String organizationId;
     private String productName;
     private String licenseType;
+    private OrganizationDto organizationDto;
 
     public static LicenseDto from(License license){
         LicenseDto licenseDto = new LicenseDto();
