@@ -2,17 +2,27 @@ spring:
   application:
     name: config-server
   profiles:
-    active: native
+    active:
+#      - vault
+      - native
+#      - native, git
   cloud:
     config:
       server:
+        #        vault:
+        #          port: 8200
+        #          host: 127.0.0.1
+        #          kv-version: 2
         native:
           search-locations: classpath:/config
+#        git:
+#          uri: https://github.com/user/config.git
+#          search-paths: licensing-service
 server:
   port: 8071
 
 encrypt:
-  key: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
+  key: ${ENCRYPT_KEY}
 
 management:
   endpoints:

@@ -1,8 +1,6 @@
 package inc.dundermifflin.stocks.licensingservice.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,6 +23,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class License {
 
@@ -50,6 +50,15 @@ public class License {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public License(String licenseId, String description, String organizationId, String productName, LicenseType licenseType, String comment) {
+        this.licenseId = licenseId;
+        this.description = description;
+        this.organizationId = organizationId;
+        this.productName = productName;
+        this.licenseType = licenseType;
+        this.comment = comment;
+    }
 
     public License withComment(String comment) {
         this.setComment(comment);
