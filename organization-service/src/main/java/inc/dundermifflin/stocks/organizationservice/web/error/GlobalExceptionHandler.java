@@ -1,4 +1,4 @@
-package inc.dundermifflin.stocks.licensingservice.web.error;
+package inc.dundermifflin.stocks.organizationservice.web.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -20,9 +20,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+@ControllerAdvice
 @Order
 @Slf4j
-@ControllerAdvice
 public class GlobalExceptionHandler {
     private final MessageSource messageSource;
 

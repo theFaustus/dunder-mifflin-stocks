@@ -1,17 +1,14 @@
-package inc.dundermifflin.stocks.licensingservice.model;
+package inc.dundermifflin.stocks.organizationservice.model;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -19,31 +16,27 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "licenses")
+@Table(name = "organizations")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class License {
+public class Organization {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
-    @Column(name = "license_id", nullable = false, unique = true)
-    private String licenseId;
-    private String description;
-    @Column(name = "organization_id", nullable = false)
-    private String organizationId;
-    @Column(name = "product_name", nullable = false)
-    private String productName;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "license_type", nullable = false)
-    private LicenseType licenseType;
-    @Column(name = "comment")
-    private String comment;
+    @Column(name = "name", nullable = false)
+    private String name;
+    @Column(name = "contact_name", nullable = false)
+    private String contactName;
+    @Column(name = "contact_email", nullable = false)
+    private String contactEmail;
+    @Column(name = "contact_phone", nullable = false)
+    private String contactPhone;
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -51,26 +44,19 @@ public class License {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public License(String licenseId, String description, String organizationId, String productName, LicenseType licenseType, String comment) {
-        this.licenseId = licenseId;
-        this.description = description;
-        this.organizationId = organizationId;
-        this.productName = productName;
-        this.licenseType = licenseType;
-        this.comment = comment;
-    }
-
-    public License withComment(String comment) {
-        this.setComment(comment);
-        return this;
+    public Organization(String name, String contactName, String contactEmail, String contactPhone) {
+        this.name = name;
+        this.contactName = contactName;
+        this.contactEmail = contactEmail;
+        this.contactPhone = contactPhone;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        License license = (License) o;
-        return id != null && Objects.equals(id, license.id);
+        Organization organization = (Organization) o;
+        return id != null && Objects.equals(id, organization.id);
     }
 
     @Override

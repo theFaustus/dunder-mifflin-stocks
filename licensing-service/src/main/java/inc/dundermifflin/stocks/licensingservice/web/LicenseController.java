@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Locale;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -27,6 +28,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api/v1/organizations/{organizationId}/licenses")
 public class LicenseController {
     private final LicenseService licenseService;
+
+    @GetMapping
+    public ResponseEntity<List<LicenseDto>> getLicenses(@PathVariable("organizationId") String organizationId) {
+        return ResponseEntity.ok(licenseService.getLicenses(organizationId));
+    }
 
     @GetMapping("/{licenseId}")
     public ResponseEntity<LicenseDto> getLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId) {

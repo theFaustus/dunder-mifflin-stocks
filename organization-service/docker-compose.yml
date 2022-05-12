@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  licensingservice:
+    container_name: inc.dunder-mifflin.stocks/licensing-service
+    image: inc.dunder-mifflin.stocks/licensing-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
