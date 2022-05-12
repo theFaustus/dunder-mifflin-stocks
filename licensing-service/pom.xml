@@ -11,7 +11,7 @@
     <groupId>inc.dunder-mifflin.stocks</groupId>
     <artifactId>licensing-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>License Service</name>
+    <name>licensing-service</name>
     <description>Dunder Mifflin Stocks Licensing Service</description>
     <properties>
         <java.version>11</java.version>
@@ -26,11 +26,23 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

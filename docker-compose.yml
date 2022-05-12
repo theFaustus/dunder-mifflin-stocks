@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgresql:
+    container_name: dunder-mifflin-stocks-pg-db
+    image: postgres
+    restart: always
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+    ports:
+      - "5433:5432"
+    volumes:
+      - "postgresql-data:/var/lib/postgresql"
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: dunder-mifflin-stocks-dev
+  postgresql-adminer:
+    container_name: axon-techbank-pgadminer
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: axon-techbank-postgresql
+#  configserver:
+#    container_name: inc.dunder-mifflin.stocks/config-server
+#    image: inc.dunder-mifflin.stocks/config-server:0.0.1-SNAPSHOT
+#    ports:
+#      - "8071:8071"
+#  licensingservice:
+#    depends_on:
+#      - configserver
+#    container_name: inc.dunder-mifflin.stocks/licensing-service
+#    image: inc.dunder-mifflin.stocks/licensing-service:0.0.1-SNAPSHOT
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      SPRING_PROFILES_ACTIVE: "dev"

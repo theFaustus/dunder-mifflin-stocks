@@ -2,6 +2,8 @@ package inc.dundermifflin.stocks.licensingservice.web;
 
 import inc.dundermifflin.stocks.licensingservice.model.License;
 import inc.dundermifflin.stocks.licensingservice.service.LicenseService;
+import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
+import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class LicenseController {
     private final LicenseService licenseService;
 
     @GetMapping("/{licenseId}")
-    public ResponseEntity<License> getLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId) {
-        final License license = licenseService.getLicense(organizationId, licenseId);
+    public ResponseEntity<LicenseDto> getLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId) {
+        LicenseDto license = licenseService.getLicense(organizationId, licenseId);
         license.add(linkTo(methodOn(LicenseController.class)
                         .getLicense(organizationId, license.getLicenseId()))
                         .withSelfRel(),
@@ -45,20 +47,20 @@ public class LicenseController {
     }
 
     @PutMapping
-    public ResponseEntity<String> updateLicense(@PathVariable("organizationId") String organizationId, @RequestBody License request,
+    public ResponseEntity<SuccessResponse> updateLicense(@PathVariable("organizationId") String organizationId, @RequestBody LicenseDto request,
                                                 @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.updateLicense(request, organizationId, locale));
     }
 
     @PostMapping
-    public ResponseEntity<String> createLicense(@PathVariable("organizationId") String organizationId, @RequestBody License request,
+    public ResponseEntity<SuccessResponse> createLicense(@PathVariable("organizationId") String organizationId, @RequestBody LicenseDto request,
                                                 @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.createLicense(request, organizationId, locale));
     }
 
     @DeleteMapping(value = "/{licenseId}")
-    public ResponseEntity<String> deleteLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId,
-                                                @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
+    public ResponseEntity<SuccessResponse> deleteLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId,
+                                                         @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId, locale));
     }
 }
