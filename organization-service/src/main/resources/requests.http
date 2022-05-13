@@ -8,9 +8,9 @@ POST http://localhost:8889/api/v1/organizations
 Content-Type: application/json
 
 {
-  "name": "JetBrains",
-  "contactName": "Tehir Galeef",
-  "contactEmail": "jetbrains@mail.com",
+  "name": "Scranton Dunder Mifflin Paper Company Inc.",
+  "contactName": "Michael Scott",
+  "contactEmail": "mscott@dmifflin.com",
   "contactPhone": "+48946542164"
 }
 
@@ -24,11 +24,9 @@ Content-Type: application/json
 Accept-Language: es
 
 {
-  "id": 1,
-  "licenseId": "1111-4444",
-  "description": "IntelliJ License",
-  "organizationId": "1",
-  "productName": "IntelliJ",
-  "licenseType": "FULL"
+  "name": "Scranton Dunder Mifflin Paper Company Inc.",
+  "contactName": "Michael Scott",
+  "contactEmail": "mscott@dmifflin.com",
+  "contactPhone": "+48946542164"
 }
 

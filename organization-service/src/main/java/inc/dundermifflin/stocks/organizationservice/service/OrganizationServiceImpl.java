@@ -4,6 +4,7 @@ import inc.dundermifflin.stocks.organizationservice.model.Organization;
 import inc.dundermifflin.stocks.organizationservice.repository.OrganizationRepository;
 import inc.dundermifflin.stocks.organizationservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.organizationservice.web.error.SuccessResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ class OrganizationServiceImpl implements OrganizationService {
     private final MessageSource messageSource;
 
     @Override
+    @CircuitBreaker(name = "organization-service-cb")
     public OrganizationDto findById(String organizationId) {
         return OrganizationDto.from(organizationRepository.findById(organizationId).orElseThrow());
     }

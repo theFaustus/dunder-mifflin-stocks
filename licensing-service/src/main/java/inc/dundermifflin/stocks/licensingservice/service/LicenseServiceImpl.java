@@ -4,20 +4,26 @@ import inc.dundermifflin.stocks.licensingservice.config.CommentProperties;
 import inc.dundermifflin.stocks.licensingservice.model.License;
 import inc.dundermifflin.stocks.licensingservice.model.LicenseType;
 import inc.dundermifflin.stocks.licensingservice.repository.LicenseRepository;
-import inc.dundermifflin.stocks.licensingservice.service.client.OrganizationClient;
 import inc.dundermifflin.stocks.licensingservice.service.client.OrganizationClientResolver;
 import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
 import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,9 +43,26 @@ class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    public List<LicenseDto> getLicenses(String organizationId) {
+    @CircuitBreaker(name = "license-service-cb")
+    public List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException {
+        randomlyRunLong(); //simulate circuit breaker behavior
         List<License> byOrganizationId = licenseRepository.findByOrganizationId(organizationId);
         return byOrganizationId.stream().map(LicenseDto::from).collect(Collectors.toList());
+    }
+
+    private void randomlyRunLong() throws TimeoutException {
+        Random random = ThreadLocalRandom.current();
+        int randomNum = random.nextInt(3) + 1;
+        if (randomNum == 3) sleep();
+    }
+
+    private void sleep() throws TimeoutException {
+        try {
+            Thread.sleep(2000);
+            throw new java.util.concurrent.TimeoutException("Oops request took too long.");
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
     }
 
     @Override
@@ -47,7 +70,7 @@ class LicenseServiceImpl implements LicenseService {
         String responseMessage = null;
         if (license != null) {
             license.setOrganizationId(organizationId);
-            License entity = new License(license.getLicenseId(), license.getDescription(), license.getOrganizationId(),  license.getProductName(), LicenseType.valueOf(license.getLicenseType()), commentProperties.getProperty());
+            License entity = new License(license.getLicenseId(), license.getDescription(), license.getOrganizationId(), license.getProductName(), LicenseType.valueOf(license.getLicenseType()), commentProperties.getProperty());
             licenseRepository.save(entity);
             responseMessage = String.format(messageSource.getMessage("license.create.message", null, locale), license.getLicenseId());
         }

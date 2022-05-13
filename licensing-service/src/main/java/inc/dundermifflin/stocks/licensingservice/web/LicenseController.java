@@ -1,11 +1,9 @@
 package inc.dundermifflin.stocks.licensingservice.web;
 
-import inc.dundermifflin.stocks.licensingservice.model.License;
 import inc.dundermifflin.stocks.licensingservice.service.LicenseService;
 import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeoutException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -30,8 +29,8 @@ public class LicenseController {
     private final LicenseService licenseService;
 
     @GetMapping
-    public ResponseEntity<List<LicenseDto>> getLicenses(@PathVariable("organizationId") String organizationId) {
-        return ResponseEntity.ok(licenseService.getLicenses(organizationId));
+    public ResponseEntity<List<LicenseDto>> getLicenses(@PathVariable("organizationId") String organizationId) throws TimeoutException {
+        return ResponseEntity.ok(licenseService.getLicensesByOrganizationId(organizationId));
     }
 
     @GetMapping("/{licenseId}")

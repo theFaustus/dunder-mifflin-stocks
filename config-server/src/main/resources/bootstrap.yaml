@@ -3,9 +3,9 @@ spring:
     name: config-server
   profiles:
     active:
-#      - vault
+      #      - vault
       - native
-#      - native, git
+  #      - native, git
   cloud:
     config:
       server:
