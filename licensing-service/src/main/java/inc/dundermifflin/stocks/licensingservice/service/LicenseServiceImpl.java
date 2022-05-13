@@ -8,6 +8,7 @@ import inc.dundermifflin.stocks.licensingservice.service.client.OrganizationClie
 import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
 import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -43,11 +44,23 @@ class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    @CircuitBreaker(name = "license-service-cb")
+    @CircuitBreaker(name = "license-service-cb", fallbackMethod = "getFallbackLicenses")
+    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE, fallbackMethod = "getFallbackLicenses")
     public List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException {
         randomlyRunLong(); //simulate circuit breaker behavior
         List<License> byOrganizationId = licenseRepository.findByOrganizationId(organizationId);
         return byOrganizationId.stream().map(LicenseDto::from).collect(Collectors.toList());
+    }
+
+    private List<LicenseDto> getFallbackLicenses(String organizationId, Throwable t) {
+        LicenseDto licenseDto = new LicenseDto();
+        licenseDto.setId("n/a");
+        licenseDto.setLicenseId("n/a");
+        licenseDto.setOrganizationId(organizationId);
+        licenseDto.setDescription("n/a");
+        licenseDto.setProductName("n/a");
+        licenseDto.setLicenseType("n/a");
+        return List.of(licenseDto);
     }
 
     private void randomlyRunLong() throws TimeoutException {
