@@ -13,6 +13,7 @@ Content-Type: application/json
 ### circuit breaker in action
 GET http://localhost:8888/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b/licenses
 Content-Type: application/json
+tmx-correlation-id: 123456
 
 ###
 POST http://localhost:8888/api/v1/organizations/1/licenses

@@ -1,9 +1,11 @@
 package inc.dundermifflin.stocks.licensingservice.web;
 
+import inc.dundermifflin.stocks.licensingservice.config.context.UserContextHolder;
 import inc.dundermifflin.stocks.licensingservice.service.LicenseService;
 import inc.dundermifflin.stocks.licensingservice.web.dto.LicenseDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeoutException;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/organizations/{organizationId}/licenses")
@@ -30,6 +33,7 @@ public class LicenseController {
 
     @GetMapping
     public ResponseEntity<List<LicenseDto>> getLicenses(@PathVariable("organizationId") String organizationId) throws TimeoutException {
+        log.info("correlation-id: {}", UserContextHolder.getContext().getCorrelationId());
         return ResponseEntity.ok(licenseService.getLicensesByOrganizationId(organizationId));
     }
 

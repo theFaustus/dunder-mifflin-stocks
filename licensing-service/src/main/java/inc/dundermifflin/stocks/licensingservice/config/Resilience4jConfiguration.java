@@ -6,6 +6,7 @@ import io.github.resilience4j.core.registry.EntryAddedEvent;
 import io.github.resilience4j.core.registry.EntryRemovedEvent;
 import io.github.resilience4j.core.registry.EntryReplacedEvent;
 import io.github.resilience4j.core.registry.RegistryEventConsumer;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.retry.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,7 @@ public class Resilience4jConfiguration {
     }
 
     @Bean
-    public RegistryEventConsumer<Bulkhead> customBulkheadBreakerRegistryEventConsumer() {
+    public RegistryEventConsumer<Bulkhead> customBulkheadRegistryEventConsumer() {
 
         return new RegistryEventConsumer<>() {
             @Override
@@ -73,6 +74,27 @@ public class Resilience4jConfiguration {
 
             @Override
             public void onEntryReplacedEvent(EntryReplacedEvent<Bulkhead> entryReplacedEvent) {
+                entryReplacedEvent.getNewEntry().getEventPublisher().onEvent(event -> log.info(event.toString()));
+            }
+        };
+    }
+
+    @Bean
+    public RegistryEventConsumer<RateLimiter> customRateLimiterRegistryEventConsumer() {
+
+        return new RegistryEventConsumer<>() {
+            @Override
+            public void onEntryAddedEvent(EntryAddedEvent<RateLimiter> entryAddedEvent) {
+                entryAddedEvent.getAddedEntry().getEventPublisher().onEvent(event -> log.info(event.toString()));
+            }
+
+            @Override
+            public void onEntryRemovedEvent(EntryRemovedEvent<RateLimiter> entryRemoveEvent) {
+                entryRemoveEvent.getRemovedEntry().getEventPublisher().onEvent(event -> log.info(event.toString()));
+            }
+
+            @Override
+            public void onEntryReplacedEvent(EntryReplacedEvent<RateLimiter> entryReplacedEvent) {
                 entryReplacedEvent.getNewEntry().getEventPublisher().onEvent(event -> log.info(event.toString()));
             }
         };

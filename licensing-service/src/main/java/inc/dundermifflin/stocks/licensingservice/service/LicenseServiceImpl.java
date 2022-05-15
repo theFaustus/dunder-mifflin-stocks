@@ -1,6 +1,7 @@
 package inc.dundermifflin.stocks.licensingservice.service;
 
 import inc.dundermifflin.stocks.licensingservice.config.CommentProperties;
+import inc.dundermifflin.stocks.licensingservice.config.context.UserContextHolder;
 import inc.dundermifflin.stocks.licensingservice.model.License;
 import inc.dundermifflin.stocks.licensingservice.model.LicenseType;
 import inc.dundermifflin.stocks.licensingservice.repository.LicenseRepository;
@@ -10,6 +11,7 @@ import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -45,12 +47,14 @@ class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    @CircuitBreaker(name = "license-service-cb")
-    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE)
     @Retry(name = "license-service-retry")
+    @CircuitBreaker(name = "license-service-cb")
+    @RateLimiter(name = "license-service-rlimit")
+    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE)
     public List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException {
         randomlyRunLong(); //simulate circuit breaker behavior
         List<License> byOrganizationId = licenseRepository.findByOrganizationId(organizationId);
+        log.info("correlation-id: {}", UserContextHolder.getContext().getCorrelationId());
         return byOrganizationId.stream().map(LicenseDto::from).collect(Collectors.toList());
     }
 
