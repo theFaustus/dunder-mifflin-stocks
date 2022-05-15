@@ -10,6 +10,7 @@ import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +45,9 @@ class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
-    @CircuitBreaker(name = "license-service-cb", fallbackMethod = "getFallbackLicenses")
-    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE, fallbackMethod = "getFallbackLicenses")
+    @CircuitBreaker(name = "license-service-cb")
+    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE)
+    @Retry(name = "license-service-retry")
     public List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException {
         randomlyRunLong(); //simulate circuit breaker behavior
         List<License> byOrganizationId = licenseRepository.findByOrganizationId(organizationId);
