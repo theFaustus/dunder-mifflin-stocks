@@ -1,0 +1,43 @@
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+spring:
+  cloud:
+    loadbalancer.ribbon.enabled: false
+    gateway:
+      discovery.locator:
+        enabled: true
+        loweCaseServiceId: true
+      routes:
+        - id: organization-service
+          uri: lb://organization-service
+          predicates:
+            - Path=/organizations/**
+          filters:
+            - RewritePath=/organizations/(?<path>.*), /$\{path}
+            - AddRequestHeader=X-Example-Request-Header-ID,F39s2
+            - AddResponseHeader=X-Example-Response-Header-ID,F39s2
+        - id: licensing-service
+          uri: lb://licensing-service
+          predicates:
+            - Path=/licenses/**
+          filters:
+            - RewritePath=/licenses/(?<path>.*), /$\{path}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    com.netflix: INFO
+    org.springframework.web: INFO
+    inc.dundermifflin.stocks: INFO

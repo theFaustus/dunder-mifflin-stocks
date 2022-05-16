@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: gateway-server
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://localhost:8071
+  config:
+    import: configserver:http://localhost:8071
+server:
+  port: 8877

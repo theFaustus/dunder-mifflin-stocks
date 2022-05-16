@@ -10,6 +10,12 @@ Content-Type: application/json
 GET http://localhost:8888/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b/licenses/1111-4444
 Content-Type: application/json
 
+
+### gateway
+GET http://localhost:8877/licenses/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b/licenses
+Content-Type: application/json
+tmx-correlation-id: 123456
+
 ### circuit breaker in action
 GET http://localhost:8888/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b/licenses
 Content-Type: application/json

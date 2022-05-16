@@ -1,3 +1,6 @@
+### gateway
+GET http://localhost:8877/organizations/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b
+Content-Type: application/json
 
 ###
 GET http://localhost:8889/api/v1/organizations/b87cf126-2527-4980-9235-8945a8289e4b

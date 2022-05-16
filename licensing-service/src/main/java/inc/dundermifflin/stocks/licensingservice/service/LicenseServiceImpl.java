@@ -54,7 +54,7 @@ class LicenseServiceImpl implements LicenseService {
     public List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException {
         randomlyRunLong(); //simulate circuit breaker behavior
         List<License> byOrganizationId = licenseRepository.findByOrganizationId(organizationId);
-        log.info("correlation-id: {}", UserContextHolder.getContext().getCorrelationId());
+        log.info("Retrieved correlation id {}", UserContextHolder.getContext().getCorrelationId());
         return byOrganizationId.stream().map(LicenseDto::from).collect(Collectors.toList());
     }
 
