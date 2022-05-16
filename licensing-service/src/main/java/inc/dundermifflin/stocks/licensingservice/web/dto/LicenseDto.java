@@ -1,11 +1,8 @@
 package inc.dundermifflin.stocks.licensingservice.web.dto;
 
 import inc.dundermifflin.stocks.licensingservice.model.License;
-import inc.dundermifflin.stocks.licensingservice.model.LicenseType;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
-
-import java.util.Random;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,7 +13,7 @@ public class LicenseDto extends RepresentationModel<LicenseDto> {
     private String organizationId;
     private String productName;
     private String licenseType;
-    private OrganizationDto organizationDto;
+    private OrganizationDto organization;
 
     public static LicenseDto from(License license){
         LicenseDto licenseDto = new LicenseDto();

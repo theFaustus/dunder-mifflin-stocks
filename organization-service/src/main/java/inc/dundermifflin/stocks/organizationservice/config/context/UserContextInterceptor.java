@@ -1,4 +1,4 @@
-package inc.dundermifflin.stocks.licensingservice.config.context;
+package inc.dundermifflin.stocks.organizationservice.config.context;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

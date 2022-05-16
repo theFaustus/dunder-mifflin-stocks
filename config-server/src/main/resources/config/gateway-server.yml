@@ -23,12 +23,19 @@ spring:
             - RewritePath=/organizations/(?<path>.*), /$\{path}
             - AddRequestHeader=X-Example-Request-Header-ID,F39s2
             - AddResponseHeader=X-Example-Response-Header-ID,F39s2
+            #This configuration is a blacklist of the sensitive headers that the gateway will keep from being
+            #propagated to a downstream service. The absence of the Authorization value in the RemoveRequestHeader
+            #list means that the gateway will allow that header through. If we don’t set this configuration property,
+            #the gateway automatically blocks the propagation of all three values (Cookie, Set-Cookie, and Authorization).
+            - RemoveRequestHeader=Cookie,Set-Cookie
         - id: licensing-service
           uri: lb://licensing-service
           predicates:
             - Path=/licenses/**
           filters:
             - RewritePath=/licenses/(?<path>.*), /$\{path}
+            - RemoveRequestHeader=Cookie,Set-Cookie
+
 
 management:
   endpoints:

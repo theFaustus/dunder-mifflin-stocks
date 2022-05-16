@@ -14,7 +14,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,7 @@ class LicenseServiceImpl implements LicenseService {
     public LicenseDto getLicense(String licenseId, String organizationId) {
         LicenseDto licenseDto = LicenseDto.from(licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId).orElseThrow());
         OrganizationDto organization = resolver.getClient().getOrganization(organizationId);
-        licenseDto.setOrganizationDto(organization);
+        licenseDto.setOrganization(organization);
         return licenseDto;
     }
 
@@ -85,12 +84,17 @@ class LicenseServiceImpl implements LicenseService {
     }
 
     @Override
+    @Retry(name = "license-service-retry")
+    @CircuitBreaker(name = "license-service-cb")
+    @RateLimiter(name = "license-service-rlimit")
+    @Bulkhead(name= "license-service-bkh", type = Bulkhead.Type.SEMAPHORE)
     public SuccessResponse createLicense(LicenseDto license, String organizationId, Locale locale) {
         String responseMessage = null;
         if (license != null) {
             license.setOrganizationId(organizationId);
             License entity = new License(license.getLicenseId(), license.getDescription(), license.getOrganizationId(), license.getProductName(), LicenseType.valueOf(license.getLicenseType()), commentProperties.getProperty());
             licenseRepository.save(entity);
+            resolver.getClient().createOrganization(license.getOrganization());
             responseMessage = String.format(messageSource.getMessage("license.create.message", null, locale), license.getLicenseId());
         }
         return SuccessResponse.builder().message(responseMessage).build();
