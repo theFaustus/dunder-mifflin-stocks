@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
+import static inc.dundermifflin.stocks.licensingservice.model.Role.ADMIN;
+import static inc.dundermifflin.stocks.licensingservice.model.Role.USER;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -31,12 +34,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class LicenseController {
     private final LicenseService licenseService;
 
+    @RolesAllowed({ADMIN, USER})
     @GetMapping
     public ResponseEntity<List<LicenseDto>> getLicenses(@PathVariable("organizationId") String organizationId) throws TimeoutException {
         log.info("correlation-id: {}", UserContextHolder.getContext().getCorrelationId());
         return ResponseEntity.ok(licenseService.getLicensesByOrganizationId(organizationId));
     }
 
+    @RolesAllowed({ADMIN, USER})
     @GetMapping("/{licenseId}")
     public ResponseEntity<LicenseDto> getLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId) {
         LicenseDto license = licenseService.getLicense(licenseId, organizationId);
@@ -55,18 +60,21 @@ public class LicenseController {
         return ResponseEntity.ok(license);
     }
 
+    @RolesAllowed({ADMIN})
     @PutMapping
     public ResponseEntity<SuccessResponse> updateLicense(@PathVariable("organizationId") String organizationId, @RequestBody LicenseDto request,
                                                 @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.updateLicense(request, organizationId, locale));
     }
 
+    @RolesAllowed({ADMIN, USER})
     @PostMapping
     public ResponseEntity<SuccessResponse> createLicense(@PathVariable("organizationId") String organizationId, @RequestBody LicenseDto request,
                                                 @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.createLicense(request, organizationId, locale));
     }
 
+    @RolesAllowed({ADMIN})
     @DeleteMapping(value = "/{licenseId}")
     public ResponseEntity<SuccessResponse> deleteLicense(@PathVariable("organizationId") String organizationId, @PathVariable("licenseId") String licenseId,
                                                          @RequestHeader(value = "Accept-Language", required = false) Locale locale) {

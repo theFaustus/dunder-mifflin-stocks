@@ -1,0 +1,9 @@
+### Encrypt
+POST http://localhost:8071/encrypt
+
+123456
+
+### Decrypt
+POST http://localhost:8071/decrypt
+
+b512e46f4338ac68c6f8efee18bcdabd037855bed996977b61778e72e7fe8eaf
