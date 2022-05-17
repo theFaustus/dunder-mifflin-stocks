@@ -1,5 +1,7 @@
 package inc.dundermifflin.stocks.gatewayserver.filter;
 
+import brave.Tracer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -13,22 +15,21 @@ import java.util.Objects;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CorrelationTrackingPostFilter implements GlobalFilter, Ordered {
 
     public static final String CORRELATION_ID = "X-Correlation-Id";
+    private final Tracer tracer;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+            String traceId = tracer.currentSpan().context().traceIdString();
+            log.info("Injecting correlation id {} into response...", traceId);
+            exchange.getResponse().getHeaders().add(CORRELATION_ID, traceId);
+            log.info("Completing outgoing request for {}.", exchange.getRequest().getURI());
+        }));
 
-        String correlationId = getCorrelationId(exchange.getRequest().getHeaders());
-        exchange.getResponse().getHeaders().add(CORRELATION_ID, correlationId);
-        log.info("Injecting correlation id {} into response...", correlationId);
-
-        return chain.filter(exchange);
-    }
-
-    private String getCorrelationId(HttpHeaders header) {
-        return Objects.requireNonNull(header.get(CORRELATION_ID)).iterator().next();
     }
 
     @Override

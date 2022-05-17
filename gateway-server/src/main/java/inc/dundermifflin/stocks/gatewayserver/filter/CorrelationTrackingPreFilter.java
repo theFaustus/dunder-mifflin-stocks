@@ -1,5 +1,7 @@
 package inc.dundermifflin.stocks.gatewayserver.filter;
 
+import brave.Tracer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
@@ -16,11 +18,14 @@ import static java.lang.String.format;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CorrelationTrackingPreFilter implements GlobalFilter, Ordered {
 
     public static final String CORRELATION_ID = "X-Correlation-Id";
     public static final String AUTH_TOKEN = "X-Auth-Token";
     public static final String USER_ID = "X-User-Id";
+
+    private final Tracer tracer;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -32,14 +37,14 @@ public class CorrelationTrackingPreFilter implements GlobalFilter, Ordered {
         if (hasCorrelationId(header)) {
             log.info(format("Tracked request with correlation id %s", header.get(CORRELATION_ID)));
         } else {
-            String correlationId = generateCorrelationId();
+            String traceId = tracer.currentSpan().context().traceIdString();
             request = exchange.getRequest()
                     .mutate()
-                    .header(CORRELATION_ID, correlationId)
+                    .header(CORRELATION_ID, traceId)
                     .header(USER_ID, getUsername(header))
                     .header(AUTH_TOKEN, getAuthToken(header))
                     .build();
-            log.info(format("Injected correlation id %s into request", correlationId));
+            log.info(format("Injected correlation id %s into request", traceId));
             return chain.filter(exchange.mutate().request(request).build());
         }
 
@@ -48,10 +53,6 @@ public class CorrelationTrackingPreFilter implements GlobalFilter, Ordered {
 
     private boolean hasCorrelationId(HttpHeaders header) {
         return header.containsKey(CORRELATION_ID);
-    }
-
-    private String generateCorrelationId() {
-        return java.util.UUID.randomUUID().toString();
     }
 
     private String getUsername(HttpHeaders requestHeaders) {

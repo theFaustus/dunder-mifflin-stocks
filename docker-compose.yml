@@ -127,7 +127,63 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+  elasticsearch:
+    container_name: dunder-mifflin-stocks-elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.0
+    volumes:
+      - "esdata:/var/lib/elasticsearch/data"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - discovery.seed_hosts=["localhost", "127.0.0.1"]
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    networks:
+      - elk
+  logstash:
+    container_name: dunder-mifflin-stocks-logstash
+    image: docker.elastic.co/logstash/logstash:8.1.0
+    volumes:
+      - type: bind
+        source: ./src/main/resources/infrastructure/logstash.conf
+        target: /usr/share/logstash/pipeline/logstash.conf
+        read_only: true
+    ports:
+      - "5001:5001"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+  kibana:
+    container_name: dunder-mifflin-stocks-kibana
+    image: docker.elastic.co/kibana/kibana:8.1.0
+    environment:
+      ELASTICSEARCH_URL: "http://localhost:9300"
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+
+networks:
+  elk:
+    driver: bridge
+
 volumes:
+  esdata:
+    driver: local
   postgresql-licenses-data:
     driver: local
   postgresql-organizations-data:
