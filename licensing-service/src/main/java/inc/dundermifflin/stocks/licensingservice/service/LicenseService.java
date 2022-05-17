@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
 public interface LicenseService {
+    void invalidateOrganizationCache(String organizationId);
+
     LicenseDto getLicense(String licenseId, String organizationId);
 
     List<LicenseDto> getLicensesByOrganizationId(String organizationId) throws TimeoutException;

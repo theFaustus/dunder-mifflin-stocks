@@ -50,7 +50,7 @@ class OrganizationServiceImpl implements OrganizationService {
         entity.setContactName(organization.getContactName());
         entity.setContactEmail(organization.getContactEmail());
         entity.setContactPhone(organization.getContactPhone());
-        String responseMessage = String.format(messageSource.getMessage("organization.update.message", null, locale), organization.getId());
+        String responseMessage = String.format(messageSource.getMessage("organization.update.message", null, locale), entity.getId());
         organizationChangeProducer.produceOrganizationChange(Action.UPDATED, entity.getId());
         return SuccessResponse.builder().message(responseMessage).build();
     }

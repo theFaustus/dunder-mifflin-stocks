@@ -1,6 +1,6 @@
 package inc.dundermifflin.stocks.licensingservice.service.client;
 
-import inc.dundermifflin.stocks.licensingservice.config.ClientProperties;
+import inc.dundermifflin.stocks.licensingservice.config.properties.ClientProperties;
 import inc.dundermifflin.stocks.licensingservice.web.dto.OrganizationDto;
 import inc.dundermifflin.stocks.licensingservice.web.error.SuccessResponse;
 import org.springframework.cloud.openfeign.FeignClient;
