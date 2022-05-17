@@ -10,3 +10,4 @@ spring:
     import: configserver:http://localhost:8071
 server:
   port: 8889
+

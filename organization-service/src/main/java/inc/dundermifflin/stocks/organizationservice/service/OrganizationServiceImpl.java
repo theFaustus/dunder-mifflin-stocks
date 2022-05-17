@@ -1,5 +1,7 @@
 package inc.dundermifflin.stocks.organizationservice.service;
 
+import inc.dundermifflin.stocks.organizationservice.events.config.OrganizationChangeProducer;
+import inc.dundermifflin.stocks.organizationservice.events.model.Action;
 import inc.dundermifflin.stocks.organizationservice.model.Organization;
 import inc.dundermifflin.stocks.organizationservice.repository.OrganizationRepository;
 import inc.dundermifflin.stocks.organizationservice.web.dto.OrganizationDto;
@@ -19,11 +21,14 @@ class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final MessageSource messageSource;
+    private final OrganizationChangeProducer organizationChangeProducer;
 
     @Override
     @CircuitBreaker(name = "organization-service-cb")
     public OrganizationDto findById(String organizationId) {
-        return OrganizationDto.from(organizationRepository.findById(organizationId).orElseThrow());
+        OrganizationDto organizationDto = OrganizationDto.from(organizationRepository.findById(organizationId).orElseThrow());
+        organizationChangeProducer.produceOrganizationChange(Action.GET, organizationId);
+        return organizationDto;
     }
 
     @Override
@@ -32,7 +37,8 @@ class OrganizationServiceImpl implements OrganizationService {
         if (organization != null) {
             Organization entity = new Organization(organization.getName(), organization.getContactName(), organization.getContactPhone(),  organization.getContactEmail());
             organizationRepository.save(entity);
-            responseMessage = String.format(messageSource.getMessage("organization.create.message", null, locale), organization.getId());
+            organizationChangeProducer.produceOrganizationChange(Action.CREATED, entity.getId());
+            responseMessage = String.format(messageSource.getMessage("organization.create.message", null, locale), entity.getId());
         }
         return SuccessResponse.builder().message(responseMessage).build();
     }
@@ -45,12 +51,14 @@ class OrganizationServiceImpl implements OrganizationService {
         entity.setContactEmail(organization.getContactEmail());
         entity.setContactPhone(organization.getContactPhone());
         String responseMessage = String.format(messageSource.getMessage("organization.update.message", null, locale), organization.getId());
+        organizationChangeProducer.produceOrganizationChange(Action.UPDATED, entity.getId());
         return SuccessResponse.builder().message(responseMessage).build();
     }
 
     @Override
     public SuccessResponse deleteOrganization(String organizationId, Locale locale) {
         organizationRepository.delete(organizationRepository.findById(organizationId).orElseThrow());
+        organizationChangeProducer.produceOrganizationChange(Action.DELETED, organizationId);
         return SuccessResponse.builder().message(String.format(messageSource.getMessage("organization.delete.message", null, locale), organizationId)).build();
     }
 }

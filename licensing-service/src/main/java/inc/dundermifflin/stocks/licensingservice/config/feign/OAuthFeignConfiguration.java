@@ -1,6 +1,8 @@
 package inc.dundermifflin.stocks.licensingservice.config.feign;
 
 import feign.RequestInterceptor;
+import inc.dundermifflin.stocks.licensingservice.config.context.UserContext;
+import inc.dundermifflin.stocks.licensingservice.config.context.UserContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.openfeign.security.OAuth2FeignRequestInterceptor;
@@ -21,7 +23,12 @@ public class OAuthFeignConfiguration {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId("keycloak");
         OAuthClientCredentialsFeignManager clientCredentialsFeignManager =
                 new OAuthClientCredentialsFeignManager(authorizedClientManager(), clientRegistration);
-        return requestTemplate -> requestTemplate.header("Authorization", "Bearer " + clientCredentialsFeignManager.getAccessToken());
+        return requestTemplate -> {
+            requestTemplate.header("Authorization", "Bearer " + clientCredentialsFeignManager.getAccessToken());
+            requestTemplate.header(UserContext.CORRELATION_ID, UserContextHolder.getContext().getCorrelationId());
+            requestTemplate.header(UserContext.USER_ID, UserContextHolder.getContext().getUserId());
+            requestTemplate.header(UserContext.AUTH_TOKEN, UserContextHolder.getContext().getAuthToken());
+        };
     }
 
     @Bean
