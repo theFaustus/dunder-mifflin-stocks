@@ -176,9 +176,29 @@ services:
       - elasticsearch
     links:
       - elasticsearch
-
+  prometheus:
+    container_name: dunder-mifflin-stocks-prometheus
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./src/main/resources/infrastructure/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - metrics
+  grafana:
+    image: "grafana/grafana:latest"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - metrics
+    ports:
+      - "3000:3000"
+    container_name: dunder-mifflin-stocks-grafana
 networks:
   elk:
+    driver: bridge
+  metrics:
     driver: bridge
 
 volumes:
